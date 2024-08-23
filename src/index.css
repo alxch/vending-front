@@ -13,7 +13,7 @@
 } */
  
 #root {
-  @apply flex flex-col items-center 
+  @apply flex flex-col items-center select-none 
   /* to remove */ pb-[20px]
 }
 
