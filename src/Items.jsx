@@ -4,7 +4,7 @@ import item2 from './assets/images/item-2.png'
 
 function Items(){
   return (
-    <div className="flex flex-wrap gap-[60px] justify-center items-stretch">
+    <div className="flex flex-wrap gap-[60px] justify-center items-stretch px-[100px]">
     {items.map(item=>(
       <Link key={item.id} to="/payment" state={item} className="flex flex-col items-center justify-end">
         <img alt={`item-${item.id}`} src={item.src}/>

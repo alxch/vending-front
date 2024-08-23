@@ -1,4 +1,4 @@
-import { createBrowserRouter, Link, RouterProvider, useLocation } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import banner from './assets/images/banner-1.png'
 import Items from './Items';
 import Success from './Success';
@@ -10,9 +10,6 @@ export default function App() {
     {/* Banner */}
     <img alt="banner" src={banner} className="w-full"/>
     
-    {/* Menu */}
-    
-
     {/* Content */}
     <RouterProvider router={ createBrowserRouter([
       {
