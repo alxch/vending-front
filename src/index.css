@@ -14,7 +14,7 @@
  
 #root {
   @apply flex flex-col items-center 
-  /* to remove */ pb-[100px]
+  /* to remove */ pb-[20px]
 }
 
 :root {

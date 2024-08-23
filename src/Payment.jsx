@@ -10,7 +10,7 @@ export default function Payment(){
   if(!item) return <h1 className="text-red-600 text-4xl">Item not specified</h1>;
 
   return (
-    <div className="flex flex-col gap-[100px] justify-start items-center px-[100px]">
+    <div className="flex flex-col gap-[100px] justify-start items-center px-[20px]">
       {/* Item */}
       <div className="flex flex-row justify-center items-center relative">
         {/* Left */}
