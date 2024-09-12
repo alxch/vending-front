@@ -2,24 +2,33 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Item from './Item';
 
+const newItemData = {
+  key: null,
+  new: true,
+  src: '',
+  price: '',
+  count: '',
+  name: ''
+};
+
 function Items(props){
   const isAdmin = props.isAdmin;
   const [mode, setMode] = useState(isAdmin ? "edit" : "view");
-  const itemsData = JSON.parse(localStorage.getItem('vm-items')||'[]');
+  const itemsData = JSON.parse(localStorage.getItem('vm-items')||'[]').map((item,key)=>{
+    if(item.key == null){
+      item.key = key;
+    }
+    return item;
+  });
   const [items, setItems] = useState(itemsData);
+  // console.log('Items:', items);
+
+  const [newItem, setNewItem] = useState({...newItemData});
 
   useEffect(()=>{
     localStorage.setItem('vm-items', JSON.stringify(items));
-  },[items]);
+  }, [items]);
 
-  const newItemData = {
-    new: true,
-    src: '',
-    price: '',
-    count: '',
-    name: ''
-  };
-  const [newItem, setNewItem] = useState(newItemData);
   const changeMode = (e) => {
     setMode(e.target.value);
   }
@@ -37,21 +46,23 @@ function Items(props){
       } : {}
     }>
       {/* Items */}
-      {items.map((item, key)=>(isAdmin ? 
+      {items.map((item,key)=>(isAdmin ? 
         <div key={key} className='flex flex-col items-center justify-end'>
           <Item mode={mode} item={item} onSave={(item)=>{
             // console.log('Save', key, item);
+            item.key = key;
             items[key] = item;
             setItems([...items]);
           }} onRemove={(item)=>{
             // console.log('Remove', key, item);
             if(!window.confirm("Do You really want to delete item " + key + "?")) return;
             items.splice(key,1);
+            items.forEach((item,key)=>item.key = key);
             setItems([...items]);
           }}/>
         </div> : 
         <Link key={key} className='flex flex-col items-center justify-end' to='/payment' state={item}>
-          <Item item={item} mode={mode} />
+          <Item item={item} />
         </Link>
       ))}
       {/* New item */}
@@ -60,8 +71,9 @@ function Items(props){
           <Item mode={mode} item={newItem} onAdd={(item)=>{
             // console.log('Add', item);
             delete item.new;
-            setNewItem(newItemData);
+            item.key = items.length;
             setItems([...items, item]);
+            setNewItem({...newItemData});
           }} onChange={(newItem)=>{
             // console.log('Change:', newItem);
             // setNewItem(newItem);

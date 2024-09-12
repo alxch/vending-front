@@ -3,7 +3,7 @@ import { useId, useState, useEffect, Fragment } from "react";
 export default function Item(props){
   const [changed, setChanged] = useState(false);
   const [item,setItem] = useState(props.item);
-  const mode = props.mode;
+  const mode = props.mode || 'view';
   const id = useId();
 
   useEffect(()=>{
@@ -50,13 +50,13 @@ export default function Item(props){
   }
 
   const add = () => {
-    props.onAdd(item);  
+    props.onAdd && props.onAdd(item);  
   }
   const save = () => {
     props.onSave(item);  
   }
   const remove = () => {
-    props.onRemove(item);  
+    props.onRemove && props.onRemove(item);  
   }
   const reset = () => {
     setItem(props.item);
@@ -95,10 +95,11 @@ export default function Item(props){
           className="text-center text-[22px] text-black rounded max-w-[100px]"/>
       }
       <span className="text-[36px]"> UZS</span>
-      <div className={`absolute right-[-${mode === "edit" ? '5' : '15'}px] top-[-20px] 
+      {/* Count */}
+      <div className={`absolute right-[-15px] top-[-20px] 
         rounded-full text-[${mode === "view"  ? '22' : '20'}px] bg-black px-[20px] py-[10px]
       `}>
-        {mode === "view" ? <span>{props.item.count}</span> : 
+        {mode === "view" ? props.item.count : 
           <input type="text" value={item.count} onChange={setCount} id={'count-'+id}
             className="text-black rounded max-w-[30px] text-center"/>
         }

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import Click from './assets/images/Click.png'
 import Payme from './assets/images/Payme.png'
 import Uzum from './assets/images/Uzum.png'
@@ -7,6 +8,30 @@ import { Link, useLocation } from 'react-router-dom';
 export default function Payment(){
   const location = useLocation();
   const item = location.state;
+  const baseUrl = 'http://localhost:8080';
+  const [qr, setQr] = useState(false);
+
+  useEffect(()=>{
+    if(!item) return;
+    (async () => {
+      try{
+        const body = JSON.stringify({...item, M: item.key, src: undefined, count: 1}); // TODO: get count from UI
+        const response = await fetch(baseUrl, {
+          method: 'post',
+          body,
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+          }
+        });
+        console.log('Response:', await response.text());
+        setQr(true);
+      }
+      catch(error){
+        console.error('Error:', error);
+      }
+    })();
+  }, [item]);
+  
   if(!item) return <h1 className="text-red-600 text-4xl">Item not specified</h1>;
 
   return (
@@ -33,7 +58,7 @@ export default function Payment(){
       </div>
       {/* QR-codes */}
       <span className="text-center text-[75px]">Оплатите товар через:</span>
-      <div className="mx-[210px] flex flex-row justify-center gap-[140px]">
+      <div className={`mx-[210px] flex flex-row justify-center gap-[140px] ${qr ? '' : 'blur-sm'}`}>
         <Link to="/success"><img alt="Click" src={Click}/></Link>
         <Link to="/success"><img alt="Payme" src={Payme}/></Link>
         <Link to="/success"><img alt="Uzum" src={Uzum}/></Link>
