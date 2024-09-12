@@ -1,79 +1,75 @@
 import { Link } from 'react-router-dom';
-import item1 from './assets/images/item-1.png'
-import item2 from './assets/images/item-2.png'
+import { useState, useEffect } from 'react';
+import Item from './Item';
 
-function Items(){
-  return (
-    <div className="flex flex-wrap gap-[60px] justify-center items-stretch px-[20px]">
-    {items.map(item=>(
-      <Link key={item.id} to="/payment" state={item} className="flex flex-col items-center justify-end">
-        <img alt={`item-${item.id}`} src={item.src}/>
-        {/* Price */}
-        <div className="relative mt-[36px] px-[32px] py-[22px] 
-          bg-[var(--price-color)] rounded-full text-white font-bold
-        ">
-          <span className="text-[36px]">{item.price} UZS</span>
-          <span className="absolute left-[calc(100%-35px)] top-[-15px] 
-            rounded-full text-[22px] bg-black px-[20px] py-[10px]
-          ">{item.id}</span>
+function Items(props){
+  const isAdmin = props.isAdmin;
+  const [mode, setMode] = useState(isAdmin ? "edit" : "view");
+  const itemsData = JSON.parse(localStorage.getItem('vm-items')||'[]');
+  const [items, setItems] = useState(itemsData);
+
+  useEffect(()=>{
+    localStorage.setItem('vm-items', JSON.stringify(items));
+  },[items]);
+
+  const newItemData = {
+    new: true,
+    src: '',
+    price: '',
+    count: '',
+    name: ''
+  };
+  const [newItem, setNewItem] = useState(newItemData);
+  const changeMode = (e) => {
+    setMode(e.target.value);
+  }
+
+  return (<>
+    {/* Controls */}
+    {isAdmin && <div className="flex flex-col gap-2 text-[22px] mb-[50px] p-[10px] border border-dashed border-gray-500 rounded">
+      Display mode: 
+      <label><input type='radio' value="edit" name="mode" checked={mode==="edit"} onChange={changeMode}/> edit</label>
+      <label><input type='radio' value="view" name="mode" checked={mode==="view"} onChange={changeMode}/> view</label>
+    </div>}
+    <div className='rounded flex flex-wrap gap-[60px] justify-center items-stretch p-[20px]' style={
+      isAdmin && mode === 'view' ? {
+        background: 'repeating-linear-gradient(45deg, #ddd, #ddd 10px, #fff 10px, #fff 20px'
+      } : {}
+    }>
+      {/* Items */}
+      {items.map((item, key)=>(isAdmin ? 
+        <div key={key} className='flex flex-col items-center justify-end'>
+          <Item mode={mode} item={item} onSave={(item)=>{
+            // console.log('Save', key, item);
+            items[key] = item;
+            setItems([...items]);
+          }} onRemove={(item)=>{
+            // console.log('Remove', key, item);
+            if(!window.confirm("Do You really want to delete item " + key + "?")) return;
+            items.splice(key,1);
+            setItems([...items]);
+          }}/>
+        </div> : 
+        <Link key={key} className='flex flex-col items-center justify-end' to='/payment' state={item}>
+          <Item item={item} mode={mode} />
+        </Link>
+      ))}
+      {/* New item */}
+      {isAdmin && mode === "edit" && 
+        <div className='flex flex-col items-center justify-end'>
+          <Item mode={mode} item={newItem} onAdd={(item)=>{
+            // console.log('Add', item);
+            delete item.new;
+            setNewItem(newItemData);
+            setItems([...items, item]);
+          }} onChange={(newItem)=>{
+            // console.log('Change:', newItem);
+            // setNewItem(newItem);
+          }}/>
         </div>
-        {/* Name */}
-        <span className="mt-[12px] text-[36px]/[40px] text-center max-w-[170px]">{item.name}</span>
-      </Link>
-    ))}
+      }
     </div>
-  );
+  </>);
 }
 
-const items = [
-  {
-    id: 1,
-    src: item1,
-    price: '6 000',
-    name: 'Coca Cola 300 мл'
-  },
-  {
-    id: 2,
-    src: item2,
-    price: '7 000',
-    name: 'Coca Cola 500 мл'
-  },
-  {
-    id: 3,
-    src: item1,
-    price: '6 000',
-    name: 'Coca Cola 300 мл'
-  },
-  {
-    id: 4,
-    src: item2,
-    price: '7 000',
-    name: 'Coca Cola 500 мл'
-  },
-  {
-    id: 5,
-    src: item1,
-    price: '6 000',
-    name: 'Coca Cola 300 мл'
-  },
-  {
-    id: 6,
-    src: item2,
-    price: '7 000',
-    name: 'Coca Cola 500 мл'
-  },
-  {
-    id: 7,
-    src: item1,
-    price: '6 000',
-    name: 'Coca Cola 300 мл'
-  },
-  {
-    id: 8,
-    src: item2,
-    price: '7 000',
-    name: 'Coca Cola 500 мл'
-  },
-];
-
-export default Items; 
+export default Items;

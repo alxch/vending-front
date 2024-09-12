@@ -7,18 +7,30 @@
   src: url();
 } */
 
-/* to enable */
 /* html, body, #root {
   @apply h-full
 } */
  
 #root {
   @apply flex flex-col items-center select-none 
-  /* to remove */ pb-[20px]
+  pb-[40px]
 }
 
 :root {
   --menu-color-active: #0468FC;
   --menu-color: #B2C6E4;
   --price-color: #D2070A;
+}
+
+.btn {
+  @apply font-bold py-2 px-4 rounded-full bg-gray-500 text-white;
+}
+.btn-blue {
+  @apply bg-blue-600;
+}
+.btn-red {
+  @apply bg-red-600;
+}
+.btn-green {
+  @apply bg-green-600;
 }

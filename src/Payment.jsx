@@ -14,7 +14,7 @@ export default function Payment(){
       {/* Item */}
       <div className="flex flex-row justify-center items-center relative">
         {/* Left */}
-        <img className="relative top-[10px] scale-[115%] mr-[80px]" alt={`item-${item.id}`} src={item.src}/>
+        <img className="relative top-[10px] scale-[115%] mr-[80px]" alt="" src={item.src}/>
         {/* Right */}
         <div className="flex flex-col items-center justify-center gap-[38px]">
           <span className="text-[70px] font-medium mb-[-5px]">{item.name}</span>
@@ -25,7 +25,7 @@ export default function Payment(){
             <span className="text-[72px]">{item.price} UZS</span>
             <span className="absolute left-[calc(100%-65px)] top-[-25px] 
               rounded-full text-[42px] bg-black px-[40px] py-[20px]
-            ">{item.id}</span>
+            ">{item.count}</span>
           </div>
           {/* Back */}
           <ButtonBack title="Вернуться назад"/>
