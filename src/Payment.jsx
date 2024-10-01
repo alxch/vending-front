@@ -8,23 +8,24 @@ import { Link, useLocation } from 'react-router-dom';
 export default function Payment(){
   const location = useLocation();
   const item = location.state;
-  const baseUrl = 'http://localhost:8080';
+  const baseUrl = 'http://localhost:8080/';
   const [qr, setQr] = useState(false);
 
   useEffect(()=>{
     if(!item) return;
     (async () => {
       try{
-        const body = JSON.stringify({...item, M: item.key, src: undefined, count: 1}); // TODO: get count from UI
-        const response = await fetch(baseUrl, {
+        const response = await fetch(baseUrl + 'select-item', {
           method: 'post',
-          body,
-          headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-          }
+          body: JSON.stringify({...item, src: undefined, count: 1, name: item.name.replaceAll('\n',' ')}),
+          // headers: {
+          //   'Content-Type': 'application/json;charset=utf-8'
+          // }
         });
-        console.log('Response:', await response.text());
-        setQr(true);
+        const result = JSON.parse(await response.text());
+        if(result.status === 1) {
+          setQr(true);
+        }
       }
       catch(error){
         console.error('Error:', error);
@@ -50,7 +51,7 @@ export default function Payment(){
             <span className="text-[72px]">{item.price} UZS</span>
             <span className="absolute left-[calc(100%-65px)] top-[-25px] 
               rounded-full text-[42px] bg-black px-[40px] py-[20px]
-            ">{item.count}</span>
+            ">{item.key}</span>
           </div>
           {/* Back */}
           <ButtonBack title="Вернуться назад"/>
