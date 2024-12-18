@@ -15,7 +15,7 @@ export default function Payment(){
   const location = useLocation();
   const navigate = useNavigate();
   const [item, setItem] = useState({...location.state, available: false});
-  const baseUrl = 'http://localhost:8080/';
+  const baseUrl = 'http://localhost:3001/api/';
   const [payment, setPayment] = useState({
     payme:{link:'',status:false},
     click:{link:'',status:false},
@@ -56,9 +56,6 @@ export default function Payment(){
         fetch: fetch(baseUrl + 'select-item', {
           method: 'post',
           body: JSON.stringify({...item, src: undefined, count: 1, name: item.name.replaceAll('\n',' ')}),
-          // headers: {
-          //   'Content-Type': 'application/json;charset=utf-8'
-          // }
           signal: controller.signal
         }),
         repeat: checkItem,
@@ -96,7 +93,7 @@ export default function Payment(){
           setPayment({...payment});
           setTimeout(()=>{
             navigate('/success');
-          }, 2000);
+          }, 3000);
         }
       });
     };

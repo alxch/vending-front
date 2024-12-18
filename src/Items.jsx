@@ -2,10 +2,31 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Item from './Item';
 
+const StaticItems = [
+  {
+    key: 1,
+    price: 1000,
+    name: 'Coca-Cola\n100ml',
+    src: require('./assets/images/item-1.png')
+  },
+  {
+    key: 2,
+    price: 2000,
+    name: 'Coca-Cola\n200ml',
+    src: require('./assets/images/item-2.png')
+  },
+  {
+    key: 3,
+    price: 3000,
+    name: 'Coca-Cola\n300ml',
+    src: require('./assets/images/item-3.png')
+  },
+];
+
 function Items(props){
   const isAdmin = props.isAdmin;
   const [mode, setMode] = useState(isAdmin ? "edit" : "view");
-  const [items, setItems] = useState(JSON.parse(localStorage.getItem('vm-items')||'[]'));
+  const [items, setItems] = useState(JSON.parse(localStorage.getItem('vm-items')||JSON.stringify(StaticItems)));
   const newKey = items.reduce((newKey,item)=>newKey <= item.key ? (
     isNaN(Number(item.key)) ? item.key + '2' : String(Number(item.key) + 1)
   ) : newKey, '');
