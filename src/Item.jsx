@@ -1,13 +1,16 @@
-import { useId, useState, useEffect, Fragment } from "react";
+import { useId, useState, useEffect, Fragment, useContext } from "react";
+import { ThemeContext } from "./Theme";
 
 const newItemData = {
   new: true,
   src: '',
   price: '',
   name: '',
+  key: ''
 };
 
 export default function Item(props){
+  const { theme } = useContext(ThemeContext);
   const [changed, setChanged] = useState(false);
   const [item,setItem] = useState(props.item || {...newItemData,key: props.newKey});
   const mode = props.mode || 'view';
@@ -93,11 +96,13 @@ export default function Item(props){
     </div>}
     {/* Image */}
     {mode === "view" ? <img alt='' src={item.src} /> : 
-      <div className={`flex flex-col items-center justify-end gap-2 border border-gray-500 border-dashed rounded w-full h-full min-w-[100px] min-h-[100px] p-[10px] ${changed === true ? 'bg-orange-200' : ''}`}>
-        <img alt='' src={item.src}/>
+      <div className={`flex flex-col items-center justify-end gap-2 border border-gray-500 border-dashed rounded w-full h-full min-w-[100px] min-h-[100px] p-[10px] ${changed === true ? 'bg-orange-200' : ''}
+      ${theme==='dark'?'text-white':'text-black'}
+      `}>
+        <img alt='' src={item.src}/>  
         <span>specify src</span>
         {/* {item.src?.match(/^data:image\/(png|jpg);base64,/) && <span>{'[Base64 image]}'}</span>} */}
-        <textarea value={item.src} className="border rounded p-[3px] max-w-[200px] border-gray-500 border-dotted" onChange={setSrc} rows={3} id={'src-'+id}/>
+        <textarea value={item.src} className="text-black border rounded p-[3px] max-w-[200px] border-gray-500 border-dotted" onChange={setSrc} rows={3} id={'src-'+id}/>
         <span>or select file</span>
         <input type="file" accept="image/*" className="border max-w-[200px] border-gray-500 border-dotted rounded" onChange={setFile} id={'file-'+id}/>
       </div>
@@ -114,7 +119,7 @@ export default function Item(props){
       <span className="text-[36px]"> UZS</span>
       {/* Key */}
       <div className={`absolute right-[-15px] top-[-20px] 
-        rounded-full text-[${mode === "view"  ? '22' : '20'}px] bg-black px-[20px] py-[10px]
+        rounded-full text-[${mode === "view"  ? '22' : '20'}px] ${theme==='dark'?'bg-white text-black':'bg-black text-white'} px-[20px] py-[10px]
       `}>
         {mode === "view" ? item.key : 
           <input type="text" value={item.key} onChange={setKey} id={'key-'+id}
@@ -124,7 +129,7 @@ export default function Item(props){
     </div>
     {/* Name */}
     {mode === "view" ? 
-      <span className="mt-[12px] text-center text-[36px]/[40px]">{
+      <span className={`${theme==='dark'?'text-white':'text-black'} mt-[12px] text-center text-[36px]/[40px]`}>{
         item.name.split('\n').map((item,key,array) => <Fragment key={key}><Fragment>{item}</Fragment>{key<array.length-1 && <br/>}</Fragment>)
       }</span> :
       <textarea value={item.name} className="text-[20px] text-center mt-[12px] max-w-[220px] border rounded p-[3px] border-gray-500 border-dotted" onChange={setName} rows={2} id={'name-'+id}/>

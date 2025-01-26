@@ -8,13 +8,12 @@
 } */
 
 /* html, body, #root {
-  @apply h-full
+  @apply bg-black h-full
 } */
  
-#root {
-  @apply flex flex-col items-center select-none 
-  pb-[40px]
-}
+/* #root {
+
+} */
 
 :root {
   --menu-color-active: #0468FC;

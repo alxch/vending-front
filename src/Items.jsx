@@ -47,7 +47,7 @@ function Items(props){
 
   return (<>
     {/* Controls */}
-    {isAdmin && <div className="flex flex-col gap-2 text-[22px] mb-[50px] p-[10px] border border-dashed border-gray-500 rounded">
+    {isAdmin && <div className="bg-white flex flex-col gap-2 text-[22px] mb-[50px] p-[10px] border border-dashed border-gray-500 rounded">
       Display mode: 
       <label><input type='radio' value="edit" name="mode" checked={mode==="edit"} onChange={changeMode}/> edit</label>
       <label><input type='radio' value="view" name="mode" checked={mode==="view"} onChange={changeMode}/> view</label>
