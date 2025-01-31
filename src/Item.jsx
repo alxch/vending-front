@@ -1,4 +1,4 @@
-import { useId, useState, useEffect, Fragment, useContext } from "react";
+import { useState, useEffect, Fragment, useContext } from "react";
 import { ThemeContext } from "./Theme";
 
 const newItemData = {
@@ -101,7 +101,7 @@ export default function Item(props){
         <img alt='' src={item.src}/>
         <span>specify src</span>
         {/* {item.src?.match(/^data:image\/(png|jpg);base64,/) && <span>{'[Base64 image]}'}</span>} */}
-        <textarea value={item.src} className="text-black border rounded p-[3px] max-w-[200px] border-gray-500 border-dotted" onChange={setSrc} rows={3} id={'src-'+idx} />
+        <textarea value={item.src} className={`${theme === "dark" ? "bg-black text-white" : "bg-white text-black"} border rounded p-[3px] max-w-[200px] border-gray-500 border-dotted`} onChange={setSrc} rows={3} id={'src-'+idx} />
         <span>or select file</span>
         <input type="file" accept="image/*" className="border max-w-[200px] border-gray-500 border-dotted rounded" onChange={setFile} id={'file-'+idx}/>
       </div>
@@ -132,7 +132,7 @@ export default function Item(props){
       <span className={`${theme==='dark'?'text-white':'text-black'} mt-[12px] text-center text-[36px]/[40px]`}>{
         item.name.split('\n').map((item,key,array) => <Fragment key={key}><Fragment>{item}</Fragment>{key<array.length-1 && <br/>}</Fragment>)
       }</span> :
-      <textarea value={item.name} className="text-[20px] text-center mt-[12px] max-w-[220px] border rounded p-[3px] border-gray-500 border-dotted" onChange={setName} rows={2} id={'name-'+idx}/>
+      <textarea value={item.name} className={`${theme === "dark" ? "bg-black text-white" : "bg-white text-black"} text-[20px] text-center mt-[12px] max-w-[220px] border rounded p-[3px] border-gray-500 border-dotted`} onChange={setName} rows={2} id={'name-'+idx}/>
     }
   </>
 }
