@@ -13,7 +13,7 @@ export default function App() {
 
   return (<div className={`${theme === 'dark' ? 'bg-black':'bg-white'} flex flex-col items-center select-none pb-[40px]`}>
     {/* Banner */}
-    <img onDoubleClick={toggleTheme} alt="banner" src={banner} className="w-full"/>
+    <img onDoubleClick={toggleTheme} alt="banner" src={banner} className={`${theme==="dark"?'-scale-x-100':''} w-full`}/>
     
     {/* Content */}
     <RouterProvider router={ createHashRouter([
