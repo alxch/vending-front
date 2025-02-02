@@ -7,7 +7,7 @@ import ButtonBack from './ButtonBack';
 import { useLocation, /* useNavigate */ } from 'react-router-dom';
 import {QRCodeSVG} from 'qrcode.react';
 import { ThemeContext } from './Theme';
-import LoadingOverlay from 'react-loading-overlay';
+import request from './request';
 
 const Logo = {
   cash: LogoCash,
@@ -18,10 +18,9 @@ const Logo = {
 
 export default function Payment(){
   const location = useLocation();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const { theme } = useContext(ThemeContext);
   const [item/* , setItem */] = useState(location.state);
-  const baseUrl = 'http://localhost:3001/api/';
   const [paymentDetails, setPaymentDetails] = useState({
     cash:{amount:0,status:false},
     payme:{link:'',status:false},
@@ -32,48 +31,13 @@ export default function Payment(){
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const controller = new AbortController();
-  const request = async({params, repeat, done}) => {
-    const url = params.url;
-    delete params.url;
-    if(params.method.toLowerCase() === 'post'){
-      params.headers = {
-        'Content-Type': 'application/json;charset=utf-8'
-      };
-    }
-    params.signal = controller.signal;
-    try{
-      setError(null);
-      const response = await fetch(baseUrl+url, params);
-      const result = await response.json();
-      console.log(`${params.method.toUpperCase()} ${url}`, result);
-      switch(result.status){
-        case 'processing': 
-          if(repeat){
-            delete result.status;
-            setTimeout(()=>repeat(result),2000);
-            break;
-          } // done
-        case 'done': 
-          setLoading(false);  
-          delete result.status;
-          done && done(result);      
-        break;
-        default: throw new Error(result.error);
-      }
-    }
-    catch(error){
-      setLoading(false);
-      console.error(error.message);
-      setError(error.message);
-    }
-  };
-
   useEffect(()=>{
     if(!item) return;
 
     // select item
     setLoading(true);
+    request.setError = setError;
+    request.setLoading = setLoading;
     request({
       params: {
         url: 'select-item',
@@ -92,8 +56,11 @@ export default function Payment(){
               setPaymentDetails(result.paymentDetails);
               getPaymentDetails();
             },
-            done: result =>{
-              // finish payment
+            done: result => {
+              setPaymentDetails(result.paymentDetails);
+              setTimeout(()=>{
+                navigate('/success');
+              }, 3000);
             }
           });
         };
@@ -101,9 +68,9 @@ export default function Payment(){
       }
     });
     return ()=>{
-      controller && controller.abort();
+      request.stop();
     }
-  }, []);
+  }, [item]);
 
   const selectPaymentMethod = async (paymentMethod) => {
     setLoading(true);
@@ -114,7 +81,6 @@ export default function Payment(){
         body: JSON.stringify({paymentMethod}),
       },
       done: result => {
-        // result.paymentMethod;
         setPaymentMethod(paymentMethod);
       }
     });
@@ -123,7 +89,11 @@ export default function Payment(){
   if(!item) return <h1 className="text-red-600 text-4xl">Item not specified</h1>;
 
   return (
-    <LoadingOverlay active={loading} spinner className={`flex flex-col gap-[80px] justify-start items-center px-[20px]`}>
+    <div className={`flex flex-col gap-[80px] justify-start items-center px-[20px] relative`}>
+      {/* Overlay */}
+      <div className={`${loading ? 'block' : 'hidden'} ${theme == 'dark' ? 'bg-black text-white' : 'bg-white text-black'} absolute w-full h-full z-10 opacity-80 flex justify-center items-center`}>
+        <span className='text-[30px]'>Loading...</span>
+      </div>
       {/* Error */}
       {error && <span className="text-center text-[75px] text-red-700">Ошибка: {error}</span>}
       
@@ -158,12 +128,16 @@ export default function Payment(){
           <div onClick={()=>selectPaymentMethod(paymentKey)} key={paymentKey} className={`flex flex-col justify-between items-center gap-[15px] rounded-lg p-5 ${theme === "dark" ? 'border-white text-white' : 'border-black text-black'} ${paymentKey === paymentMethod ? 'border-4' : 'border-0' } text-[28px]`}>
             <img alt={paymentKey} src={Logo[paymentKey]}/>
             {paymentKey === 'cash' ? 
-              <span>{paymentDetails[paymentKey].amount} UZS</span> : 
-              <QRCodeSVG level="Q" size="210" value={paymentDetails[paymentKey].link} />
+              <span>{paymentMethod == 'cash' ? 
+                `${paymentDetails[paymentKey].amount} UZS` : ''
+              }</span> : 
+              <QRCodeSVG level="Q" size="210" value={
+                paymentMethod !== 'cash' ? paymentDetails[paymentKey].link : ''
+              } />
             }
           </div>
         ))}
       </div>
-    </LoadingOverlay>
+    </div>
   );
 }
