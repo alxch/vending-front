@@ -15,25 +15,29 @@ const request = async({params, repeat, done}) => {
     const response = await fetch(baseUrl+url, params);
     const result = await response.json();
     console.log(`${params.method.toUpperCase()} ${url}`, result);
+    if(!result.status) throw new Error(JSON.stringify(result));
+    
     switch(result.status){
       case 'processing': 
         if(repeat){
-          delete result.status;
           request.timeout = setTimeout(()=>repeat(result),2000);
           break;
         } // done
       case 'done': 
         request.setLoading(false);  
-        delete result.status;
         done && done(result);      
       break;
-      default: throw new Error(result.error);
+      case 'error':
+        throw new Error(result.error);
+      default: 
+        throw new Error(JSON.stringify(result));
     }
   }
   catch(error){
     request.setLoading(false);
     console.error(error.message);
     request.setError(error.message);
+    // TODO: repeat request after delay
   }
 };
 

@@ -4,7 +4,7 @@ import LogoPayme from './assets/images/payme.png'
 import LogoUzum from './assets/images/uzum.png'
 import LogoCash from './assets/images/cash.png'
 import ButtonBack from './ButtonBack';
-import { useLocation, /* useNavigate */ } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {QRCodeSVG} from 'qrcode.react';
 import { ThemeContext } from './Theme';
 import request from './request';
@@ -29,51 +29,69 @@ export default function Payment(){
   });
   const [paymentMethod, setPaymentMethod] = useState();
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState('');
 
   useEffect(()=>{
     if(!item) return;
 
-    // select item
-    setLoading(true);
-    request.setError = setError;
-    request.setLoading = setLoading;
-    request({
-      params: {
-        url: 'select-item',
-        method: 'post',
-        body: JSON.stringify(item),
-      },
-      done: result =>{
-        // get payment details
-        const getPaymentDetails = async() => {
-          request({
-            params: { 
-              url: 'payment-details', 
-              method: 'get'
-            },
-            repeat: result => {
-              setPaymentDetails(result.paymentDetails);
-              getPaymentDetails();
-            },
-            done: result => {
-              setPaymentDetails(result.paymentDetails);
-              setTimeout(()=>{
-                navigate('/success');
-              }, 3000);
-            }
-          });
-        };
-        getPaymentDetails();
-      }
-    });
+    // 1. select item
+    const selectItem = async()=>{
+      setLoading('Selecting item');
+      request.setError = setError;
+      request.setLoading = setLoading;
+      request({
+        params: {
+          url: 'select-item',
+          method: 'post',
+          body: JSON.stringify(item),
+        },
+        done: result =>{
+          getPaymentDetails();
+        }
+      });
+    };
+
+    // 2. get payment details
+    const getPaymentDetails = async() => {
+      request({
+        params: { 
+          url: 'payment-details', 
+          method: 'get'
+        },
+        repeat: result => {
+          setPaymentDetails(result.paymentDetails);
+          getPaymentDetails();
+        },
+        done: result => {
+          setPaymentDetails(result.paymentDetails);
+          checkItemDelivery();
+        }
+      });
+    };
+
+    // 3. check item delivery
+    const checkItemDelivery = () => {
+      setLoading('Getting item delivery');
+      request({
+        params: {
+          url: 'item-delivery', 
+          method: 'get'
+        },
+        repeat: checkItemDelivery,
+        done: result => {
+          navigate('/success');
+        }
+      }); 
+    };
+
+    selectItem();
     return ()=>{
       request.stop();
     }
   }, [item]);
 
   const selectPaymentMethod = async (paymentMethod) => {
-    setLoading(true);
+    setLoading('Selecting payment method');
     request({
       params: {
         url: 'select-payment-method', 
@@ -92,7 +110,7 @@ export default function Payment(){
     <div className={`flex flex-col gap-[80px] justify-start items-center px-[20px] relative`}>
       {/* Overlay */}
       <div className={`${loading ? 'block' : 'hidden'} ${theme == 'dark' ? 'bg-black text-white' : 'bg-white text-black'} absolute w-full h-full z-10 opacity-80 flex justify-center items-center`}>
-        <span className='text-[30px]'>Loading...</span>
+        <span className='text-[30px]'>{loading}...</span>
       </div>
       {/* Error */}
       {error && <span className="text-center text-[75px] text-red-700">Ошибка: {error}</span>}
@@ -122,15 +140,13 @@ export default function Payment(){
       </div>
 
       {/* Payment methods */}
-      <span className="text-center text-[75px] text-gray-700">Выберете способ оплаты:</span>
+      <span className="text-center text-[75px] text-gray-700">Выберите способ оплаты:</span>
       <div className={`flex flex-row justify-center gap-10 items-stretch w-full`}>
         {Object.keys(paymentDetails).map(paymentKey=>(
           <div onClick={()=>selectPaymentMethod(paymentKey)} key={paymentKey} className={`flex flex-col justify-between items-center gap-[15px] rounded-lg p-5 ${theme === "dark" ? 'border-white text-white' : 'border-black text-black'} ${paymentKey === paymentMethod ? 'border-4' : 'border-0' } text-[28px]`}>
             <img alt={paymentKey} src={Logo[paymentKey]}/>
             {paymentKey === 'cash' ? 
-              <span>{paymentMethod == 'cash' ? 
-                `${paymentDetails[paymentKey].amount} UZS` : ''
-              }</span> : 
+              <span>{`${paymentDetails[paymentKey].amount} UZS`}</span> : 
               <QRCodeSVG level="Q" size="210" value={
                 paymentMethod !== 'cash' ? paymentDetails[paymentKey].link : ''
               } />
