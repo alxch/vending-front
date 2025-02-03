@@ -13,10 +13,15 @@ const request = async({params, repeat, done}) => {
   try{
     request.setError(null);
     const response = await fetch(baseUrl+url, params);
-    const result = await response.json();
-    console.log(`${params.method.toUpperCase()} ${url}`, result);
-    if(!result.status) throw new Error(JSON.stringify(result));
+    if(response.status >= 500){
+      console.log(`${params.method.toUpperCase()} ${url}`, response.status);
+      throw new Error(await response.text());
+    }
     
+    const result = await response.json();
+    console.log(`${params.method.toUpperCase()} ${url}`, result, response.status);
+    if(!result.status) throw new Error(JSON.stringify(result));
+
     switch(result.status){
       case 'processing': 
         if(repeat){
