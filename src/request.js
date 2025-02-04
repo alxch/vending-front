@@ -1,18 +1,19 @@
 const baseUrl = 'http://localhost:3001/api/';
-const repeatInterval = 8000;
+const repeatInterval = 1000;
 
-const request = async({params, repeat, done}) => {
-  const url = params.url;
-  if(params.method.toLowerCase() === 'post'){
-    params.headers = {
-      'Content-Type': 'application/json;charset=utf-8'
-    };
-  }
-  request.controller = new AbortController();
-  params.signal = request.controller.signal;
-
+// only one request allowed at a time
+const request = async({params, repeat, done, loading, onError}) => {
   try{
-    request.setError(null);
+    const url = params.url;
+    if(params.method.toLowerCase() === 'post'){
+      params.headers = {
+        'Content-Type': 'application/json;charset=utf-8'
+      };
+    }
+    // request.controller = new AbortController();
+    // params.signal = request.controller.signal;  
+    loading && loading(true);
+    // onError && onError(null);
     const response = await fetch(baseUrl+url, params);
     if(response.status >= 500){
       console.log(`${params.method.toUpperCase()} ${url}`, response.status);
@@ -20,17 +21,21 @@ const request = async({params, repeat, done}) => {
     }
     
     const result = await response.json();
-    console.log(`${params.method.toUpperCase()} ${url}`, result, response.status);
+    // console.log(`${params.method.toUpperCase()} ${url}`, result, response.status);
     if(!result.status) throw new Error(JSON.stringify(result));
 
     switch(result.status){
       case 'processing': 
         const repeatCallback = repeat && repeat(result);
-        request.timeout = setTimeout(()=>repeatCallback && repeatCallback(result),repeatInterval);
+        const timer = setTimeout(()=>{
+          repeatCallback && repeatCallback(result);
+        }, repeatInterval);
+        request.timeouts.push(timer);
       break;
       case 'done': 
-        request.setLoading(false);  
-        done && done(result);      
+        loading && loading(false);  
+        done && done(result);
+        onError && onError(null);   
       break;
       case 'error':
         throw new Error(result.error);
@@ -39,16 +44,18 @@ const request = async({params, repeat, done}) => {
     }
   }
   catch(error){
-    request.setLoading(false);
+    loading && loading(false);
     console.error(error.message);
-    request.setError(error.message);
+    onError && onError(error.message);
     // TODO: repeat request after delay
   }
 };
 
+request.timeouts = [];
 request.stop = () => {
-  request.timeout && clearTimeout(request.timeout);
-  request.controller.abort();
+  request.timeouts.forEach(clearTimeout);
+  request.timeouts = [];
+  // request.controller.abort();
 };
 
 export default request;
