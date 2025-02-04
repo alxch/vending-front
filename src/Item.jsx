@@ -1,5 +1,4 @@
-import { useState, useEffect, Fragment, useContext } from "react";
-import { ThemeContext } from "./Theme";
+import { useState, useEffect, Fragment } from "react";
 
 const newItemData = {
   new: true,
@@ -10,14 +9,12 @@ const newItemData = {
 };
 
 export default function Item(props){
-  const { theme } = useContext(ThemeContext);
   const [changed, setChanged] = useState(false);
   const [item, setItem] = useState({...props.item || newItemData});
   const mode = props.mode || 'view';
   const idx = props.idx; // useId();
 
   useEffect(()=>{
-    // console.log(item,props.item);
     if(JSON.stringify(item) === JSON.stringify({...props.item || newItemData})){
       setChanged(false);
     }
@@ -25,12 +22,6 @@ export default function Item(props){
       setChanged(true);
     }
   }, [item, props.item]);
-
-  useEffect(()=>{
-    if(!props.itemModifier || props.itemModifier.idx != idx) return;
-    delete props.itemModifier.idx;
-    setItem({...item, ...props.itemModifier});
-  }, [props.itemModifier]);
 
   const setFile = (e) => {
     const files = e.target.files;
@@ -95,15 +86,14 @@ export default function Item(props){
     </div>}
     {/* Image */}
     {mode === "view" ? <img alt='' src={item.src} /> : 
-      <div className={`flex flex-col items-center justify-end gap-2 border border-gray-500 border-dashed rounded w-full h-full min-w-[100px] min-h-[100px] p-[10px] ${changed === true ? 'bg-orange-400' : ''}
-      ${theme==='dark'?'text-white':'text-black'}
+      <div className={`flex flex-col items-center justify-end gap-2 border border-dashed rounded w-full h-full min-w-[100px] min-h-[100px] p-[10px] ${changed === true ? 'bg-orange-400' : ''}
       `}>
         <img alt='' src={item.src}/>
         <span>specify src</span>
         {/* {item.src?.match(/^data:image\/(png|jpg);base64,/) && <span>{'[Base64 image]}'}</span>} */}
-        <textarea value={item.src} className={`${theme === "dark" ? "bg-black text-white" : "bg-white text-black"} border rounded p-[3px] max-w-[200px] border-gray-500 border-dotted`} onChange={setSrc} rows={3} id={'src-'+idx} />
+        <textarea value={item.src} className={`border rounded p-[3px] max-w-[200px] border-dotted`} onChange={setSrc} rows={3} id={'src-'+idx} />
         <span>or select file</span>
-        <input type="file" accept="image/*" className="border max-w-[200px] border-gray-500 border-dotted rounded" onChange={setFile} id={'file-'+idx}/>
+        <input type="file" accept="image/*" className="border max-w-[200px] border-dotted rounded no-keyboard" onChange={setFile} id={'file-'+idx}/>
       </div>
     }
     {/* Price */}
@@ -118,7 +108,7 @@ export default function Item(props){
       <span className="text-[36px]"> UZS</span>
       {/* Key */}
       <div className={`absolute right-[-15px] top-[-20px] 
-        rounded-full text-[20px] border-[1px] ${theme==='dark'?'border-white':'border-black'} 
+        rounded-full text-[20px] border-[1px] 
         bg-black text-white px-[20px] py-[10px]
       `}>
         {mode === "view" ? item.key : 
@@ -129,10 +119,10 @@ export default function Item(props){
     </div>
     {/* Name */}
     {mode === "view" ? 
-      <span className={`${theme==='dark'?'text-white':'text-black'} mt-[12px] text-center text-[36px]/[40px]`}>{
+      <span className={`mt-[12px] text-center text-[36px]/[40px]`}>{
         item.name.split('\n').map((item,key,array) => <Fragment key={key}><Fragment>{item}</Fragment>{key<array.length-1 && <br/>}</Fragment>)
       }</span> :
-      <textarea value={item.name} className={`${theme === "dark" ? "bg-black text-white" : "bg-white text-black"} text-[20px] text-center mt-[12px] max-w-[220px] border rounded p-[3px] border-gray-500 border-dotted`} onChange={setName} rows={2} id={'name-'+idx}/>
+      <textarea value={item.name} className={`text-[20px] text-center mt-[12px] max-w-[220px] border rounded p-[3px] border-dotted`} onChange={setName} rows={3} id={'name-'+idx}/>
     }
   </>
 }

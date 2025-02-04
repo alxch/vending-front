@@ -1,4 +1,5 @@
 const baseUrl = 'http://localhost:3001/api/';
+const repeatInterval = 8000;
 
 const request = async({params, repeat, done}) => {
   const url = params.url;
@@ -24,10 +25,9 @@ const request = async({params, repeat, done}) => {
 
     switch(result.status){
       case 'processing': 
-        if(repeat){
-          request.timeout = setTimeout(()=>repeat(result),2000);
-          break;
-        } // done
+        const repeatCallback = repeat && repeat(result);
+        request.timeout = setTimeout(()=>repeatCallback && repeatCallback(result),repeatInterval);
+      break;
       case 'done': 
         request.setLoading(false);  
         done && done(result);      
