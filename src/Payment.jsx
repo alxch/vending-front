@@ -153,10 +153,10 @@ export default function Payment(){
   }
 
   return (!item ? <h1 className="text-red-700 text-4xl">Item not specified</h1> :
-    <div className={`flex flex-col gap-[80px] justify-start items-center px-[20px] relative`}>
+    <div className={`flex flex-col gap-[60px] justify-start items-center px-[20px] relative`}>
       {/* Overlay */}
-      <div className={`${loading ? 'block' : 'hidden'} absolute w-full h-full z-10 bg-white opacity-85 flex justify-center items-center`}>
-        <span className='text-[30px]'>{loading}...</span>
+      <div className={`${loading ? 'block' : 'hidden'} absolute w-[110%] h-full z-10 bg-white opacity-90 flex justify-center items-start`}>
+        <span className='relative text-[40px] top-[30%]'>{loading}...</span>
       </div>
       {/* Error */}
       {error && (error.overlay ? 
@@ -193,7 +193,7 @@ export default function Payment(){
       </div>
 
       {/* Payment methods */}
-      <span className="text-center text-[75px] text-gray-700">Выберите способ оплаты:</span>
+      <span className="text-center text-[60px] text-gray-700">Выберите способ оплаты:</span>
       <div className={`flex flex-row justify-center gap-10 items-stretch w-full`}>
         {PaymentMethods.map(paymentMethod=>(
           <div onClick={()=>selectPaymentMethod(paymentMethod)} key={paymentMethod} className={`${payment[paymentMethod].done && 'bg-green-700'} flex flex-col justify-between items-center gap-[15px] rounded-lg p-5 ${paymentMethod === payment.method ? 'border-4' : 'border-0' } text-[28px]`}>

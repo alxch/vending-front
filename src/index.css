@@ -11,6 +11,13 @@
   @apply h-full
 } */
 
+html, body {
+  /* cursor: none; */
+}
+body::-webkit-scrollbar{
+  display:none;
+}
+
 :root {
   --menu-color-active: #0468FC;
   --menu-color: #B2C6E4;
