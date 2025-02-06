@@ -6,7 +6,7 @@ export default function Menu(){
   const payment = ['success','payment'].includes(path);
   const success = path === 'success';
   return (
-    <div className="mx-[10px] my-[85px] px-[36px] py-[25px] font-medium
+    <div className="mx-[10px] my-[55px] px-[36px] py-[25px] font-medium
       border-[4px] border-[var(--menu-color-active)] rounded-full  
       flex items-center gap-[33px] text-[24px] text-[var(--menu-color)]
     ">

@@ -5,7 +5,8 @@ const newItemData = {
   src: '',
   price: '',
   name: '',
-  key: ''
+  key: '',
+  count: 0
 };
 
 export default function Item(props){
@@ -13,6 +14,7 @@ export default function Item(props){
   const [item, setItem] = useState({...props.item || newItemData});
   const mode = props.mode || 'view';
   const idx = props.idx; // useId();
+  // const onChange = props.onChange || (()=>{});
 
   useEffect(()=>{
     if(JSON.stringify(item) === JSON.stringify({...props.item || newItemData})){
@@ -38,22 +40,27 @@ export default function Item(props){
   const setSrc = (e) => {
     const src = e.target.value;
     setItem({...item, src});
-    props.onChange && props.onChange('src-'+idx, src);
+    // onChange('src-'+idx, src);
   }
   const setPrice = (e) => {
-    const price = e.target.value;
+    const price = Number(e.target.value);
     setItem({...item, price});
-    props.onChange && props.onChange('price-'+idx, price);
+    // onChange('price-'+idx, price);
   }
   const setKey = (e) => {
     const key = e.target.value;
     setItem({...item, key});
-    props.onChange && props.onChange('key-'+idx, key);
+    // onChange('key-'+idx, key);
   }
   const setName = (e) => {
     const name = e.target.value;
     setItem({...item, name});
-    props.onChange && props.onChange('name-'+idx, name);
+    // onChange('name-'+idx, name);
+  }
+  const setCount = (e) => {
+    const count = Number(e.target.value);
+    setItem({...item, count});
+    // onChange('count-'+idx, count);
   }
 
   const add = () => {
@@ -72,7 +79,10 @@ export default function Item(props){
     setItem({...props.item || newItemData});
   }
   
-  return <>
+  return <div className={`
+      ${mode === "edit" && `rounded-xl ${changed ? 'bg-orange-400' : 'bg-gray-100'}`} 
+      p-2 flex flex-col items-center justify-end
+    `}>
     {/* Buttons */}
     {mode === "edit" && <div className="flex flex-row gap-1 items-center justify-center mb-3">
       {item.new ? 
@@ -84,10 +94,18 @@ export default function Item(props){
       }
       <button disabled={!changed} onClick={reset} className={`btn ${changed ? 'btn-blue' : ''} `}>Reset</button>  
     </div>}
+    {/* Count */}
+    <div className={`mt-2 mb-3
+      rounded-full text-[20px] text-black p-[10px]
+    `}>
+      {mode === "view" ? item.count : 
+        <input type="text" value={item.count} onChange={setCount} id={'count-'+idx}
+          className="bg-white text-black rounded max-w-[30px] text-center"/>
+      } pcs.
+    </div>
     {/* Image */}
     {mode === "view" ? <img alt='' src={item.src} /> : 
-      <div className={`flex flex-col items-center justify-end gap-2 border border-dashed rounded w-full h-full min-w-[100px] min-h-[100px] p-[10px] ${changed === true ? 'bg-orange-400' : ''}
-      `}>
+      <div className={`flex flex-col items-center justify-end gap-2 w-full h-full min-w-[100px] min-h-[100px]`}>
         <img alt='' src={item.src}/>
         <span>specify src</span>
         {/* {item.src?.match(/^data:image\/(png|jpg);base64,/) && <span>{'[Base64 image]}'}</span>} */}
@@ -124,5 +142,5 @@ export default function Item(props){
       }</span> :
       <textarea value={item.name} className={`text-[20px] text-center mt-[12px] max-w-[220px] border rounded p-[3px] border-dotted`} onChange={setName} rows={3} id={'name-'+idx}/>
     }
-  </>
+  </div>
 }

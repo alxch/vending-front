@@ -1,21 +1,24 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Item from './Item';
 
 const StaticItems = [
   {
+    count: 1,
     key: '1.1',
     price: 1000,
     name: 'Coca-Cola\n100ml',
     src: require('./assets/images/item-1.png')
   },
   {
+    count: 1,
     key: '1.2',
     price: 2000,
     name: 'Coca-Cola\n200ml',
     src: require('./assets/images/item-2.png')
   },
   {
+    count: 1,
     key: '1.3',
     price: 3000,
     name: 'Coca-Cola\n300ml',
@@ -25,10 +28,17 @@ const StaticItems = [
 
 function Items(props){
   const isAdmin = props.isAdmin;
+  const itemsInit = JSON.parse(localStorage.getItem('vm-items')||JSON.stringify(StaticItems));
+  const location = useLocation();
+  if(location.state){
+    const idx = itemsInit.findIndex(item => item.key === location.state.key);
+    if(idx !== -1) itemsInit[idx] = location.state;
+  }
+  const [items, setItems] = useState(itemsInit);
   const [mode, setMode] = useState(isAdmin ? "edit" : "view");
-  const [items, setItems] = useState(JSON.parse(localStorage.getItem('vm-items')||JSON.stringify(StaticItems)));
 
   useEffect(()=>{
+    console.log('Items:',items);
     localStorage.setItem('vm-items', JSON.stringify(items));
   }, [items]);
 
@@ -54,35 +64,33 @@ function Items(props){
       </div>
     }
     {/* Wrap */}
-    <div className='rounded flex flex-wrap gap-[60px] justify-center items-stretch p-[20px]' style={
+    <div className='rounded flex flex-wrap gap-[50px] justify-evenly items-stretch p-[20px]' style={
       isAdmin && mode === 'view' ? {
         background: 'repeating-linear-gradient(45deg, #ddd, #ddd 10px, #fff 10px, #fff 20px'
       } : {}
     }>
       {/* Items */}
       {items.map((item,idx)=>(isAdmin ? 
-        <div key={idx} className='flex flex-col items-center justify-end'>
-          <Item idx={idx} mode={mode} item={item} onSave={(saveItem)=>{
-            items[idx] = saveItem;
-            setItems([...items]);
-          }} onRemove={(removeItem)=>{
-            if(!window.confirm("Do You really want to delete item " + removeItem.key + "?")) return;
-            items.splice(idx,1);
-            setItems([...items]);
-          }} />
-        </div> : /* not admin */
-        <Link key={idx} className='flex flex-col items-center justify-end' to='/payment' state={item}>
+        <Item key={idx} idx={idx} mode={mode} item={item} onSave={(saveItem)=>{
+          items[idx] = saveItem;
+          setItems([...items]);
+        }} onRemove={(removeItem)=>{
+          if(!window.confirm("Do You really want to delete item " + removeItem.key + "?")) return;
+          items.splice(idx,1);
+          setItems([...items]);
+        }} /> : 
+        /* not admin */
+        <Link key={idx} className={`${item.count ? '':'grayscale'} flex flex-col items-center justify-end`} to={item.count ? '/payment' : ''} state={item}>
           <Item idx={idx} item={item} />
         </Link>
       ))}
+
       {/* New item */}
       {isAdmin && mode === "edit" && 
-        <div className='flex flex-col items-center justify-end'>
-          <Item idx="_" mode={mode} onAdd={(newItem)=>{
-            items.push(newItem);
-            setItems([...items]);
-          }} />
-        </div>
+        <Item idx="_" mode={mode} onAdd={(newItem)=>{
+          items.push(newItem);
+          setItems([...items]);
+        }} />
       }
     </div>
   </>);

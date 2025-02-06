@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 
-export default function ButtonBack({disabled, title,to,onClick}){
-  return <Link to={to} onClick={e=> {
-    if(onClick) {
+export default function ButtonBack(props){
+  return <Link state={props.state} to={props.to} onClick={e=> {
+    if(props.onClick) {
       e.stopPropagation();
       e.preventDefault();
-      onClick();
+      props.onClick();
     }
-  }} className={`text-[40px] text-white ${disabled ? 'bg-gray-500':'bg-[var(--menu-color-active)]'}
-    rounded-full px-[40px] py-[30px]`}>⟵ {title}</Link>
+  }} className={`text-[40px] text-white ${props.disabled ? 'bg-gray-500':'bg-[var(--menu-color-active)]'}
+    rounded-full px-[40px] py-[30px]`}>⟵ {props.title}</Link>
 }
