@@ -11,8 +11,9 @@
   @apply h-full
 } */
 
-html, body {
-  /* cursor: none; */
+* {
+  /* cursor: none !important; */
+  user-select: none !important;
 }
 body::-webkit-scrollbar{
   display:none;

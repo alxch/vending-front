@@ -47,7 +47,7 @@ const request = async({params, repeat, done, loading, onError}) => {
     loading && loading(false);
     console.error(error.message);
     onError && onError(error.message);
-    // TODO: repeat request after delay
+    setTimeout(()=>request({params, repeat, done, loading, onError}),5000);
   }
 };
 

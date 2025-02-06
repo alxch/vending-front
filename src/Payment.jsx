@@ -115,7 +115,19 @@ export default function Payment(){
 
   // start
   useEffect(()=>{
-    request.selectItem();    
+    // serial port requires permission on each reboot:
+    // https://stackoverflow.com/questions/74323297/web-serial-api-not-persisting-port-access
+    // 
+    // attempt to access serial port:
+    // await navigator.serial.requestPort({ filters: [{usbVendorId: 0x1a86}] });
+    // const port = (await navigator.serial.getPorts())[0];
+    // await port.open({baudRate:9600});
+    // const writer = port.writable.getWriter();
+    // const reader = port.readable.getReader();
+    // await reader.read().then(console.log,console.log);
+    // await writer.write(new Uint8Array([0x01,0x02,0x03]));
+
+    request.selectItem();
     return ()=>{
       request.stop();
     }
@@ -143,7 +155,7 @@ export default function Payment(){
   };
   
   // back
-  const paymentDone = payment.payme.done||payment.cash.done;
+  const paymentDone = payment.payme.done || payment.cash.done;
   const goBack = async () => {
     if(paymentDone) return;
 
