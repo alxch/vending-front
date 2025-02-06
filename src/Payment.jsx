@@ -59,7 +59,7 @@ export default function Payment(){
       },
       repeat: result => {
         const payment = result.payment;
-        console.log('Payment:',payment.cash,payment.payme);
+        console.log('Payment:',payment.method,payment.cash,payment.payme);
         setPayment(payment);
         return getPaymentDetails;
       },
@@ -69,15 +69,15 @@ export default function Payment(){
   // to get actual `back` value
   request.getPaymentDetailsDone = result => {
     const payment = result.payment;
-    console.log('Payment:',payment.cash,payment.payme);
+    console.log('Payment:',payment.method,payment.cash,payment.payme);
     setPayment(payment);
 
     if(back) return;
-    checkItemDelivery();
+    deliverItem();
   }; 
 
-  // 3. check item delivery
-  const checkItemDelivery = () => {
+  // 3. deliver item
+  const deliverItem = () => {
     request({
       onError: error => {
         setError({message:error, overlay:true, action: 
@@ -94,18 +94,18 @@ export default function Payment(){
                 navigate('/');
               }
             });
-          }}>go back and accept losing money</span>
+          }}>go back and accept losing Your money</span>
         });
       },
       loading: status=>setLoading(status && 'Delivering item'),
       params: {
-        url: 'item-delivery', 
-        method: 'get'
+        url: 'deliver-item', 
+        method: 'post'
       },
-      repeat: result => {
-        console.log('Delivery:', result.itemDelivered);
-        return checkItemDelivery;
-      },
+      // repeat: result => {
+      //   console.log('Delivery:', result.itemDelivered);
+      //   return deliverItem;
+      // },
       done: result => {
         console.log('Delivery:', result.itemDelivered);
         navigate('/success');

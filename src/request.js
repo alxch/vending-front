@@ -15,6 +15,7 @@ const request = async({params, repeat, done, loading, onError}) => {
     loading && loading(true);
     // onError && onError(null);
     const response = await fetch(baseUrl+url, params);
+    // setTimeout(()=>request({params, repeat, done, loading, onError}),5000);
     if(response.status >= 500){
       console.log(`${params.method.toUpperCase()} ${url}`, response.status);
       throw new Error(await response.text());
@@ -47,7 +48,6 @@ const request = async({params, repeat, done, loading, onError}) => {
     loading && loading(false);
     console.error(error.message);
     onError && onError(error.message);
-    setTimeout(()=>request({params, repeat, done, loading, onError}),5000);
   }
 };
 
