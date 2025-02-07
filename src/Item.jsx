@@ -6,7 +6,8 @@ const newItemData = {
   price: '',
   name: '',
   key: '',
-  count: 0
+  count: 0,
+  sold: 0,
 };
 
 export default function Item(props){
@@ -14,6 +15,7 @@ export default function Item(props){
   const [item, setItem] = useState({...props.item || newItemData});
   const mode = props.mode || 'view';
   const idx = props.idx; // useId();
+  const isAdmin = props.isAdmin;
   // const onChange = props.onChange || (()=>{});
 
   useEffect(()=>{
@@ -95,13 +97,14 @@ export default function Item(props){
       <button disabled={!changed} onClick={reset} className={`btn ${changed ? 'btn-blue' : ''} `}>Reset</button>  
     </div>}
     {/* Count */}
-    <div className={`mt-2 mb-3
-      rounded-full text-[20px] text-black p-[10px]
+    <div className={`
+      rounded-full text-[20px] text-black p-[10px] flex flex-col items-center justify-start
     `}>
-      {mode === "view" ? item.count : 
+      <span>{mode === "view" ? item.count : 
         <input type="text" value={item.count} onChange={setCount} id={'count-'+idx}
           className="bg-white text-black rounded max-w-[30px] text-center"/>
-      } pcs.
+      } pcs. {isAdmin && mode === "view" && `/ ${item.sold || 0} sold`} </span>
+      {/* Sold */}
     </div>
     {/* Image */}
     {mode === "view" ? <img alt='' src={item.src} /> : 

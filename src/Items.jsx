@@ -4,6 +4,7 @@ import Item from './Item';
 
 const StaticItems = [
   {
+    sold: 0,
     count: 1,
     key: '1.1',
     price: 1000,
@@ -11,6 +12,7 @@ const StaticItems = [
     src: require('./assets/images/item-1.png')
   },
   {
+    sold: 0,
     count: 1,
     key: '1.2',
     price: 2000,
@@ -18,6 +20,7 @@ const StaticItems = [
     src: require('./assets/images/item-2.png')
   },
   {
+    sold: 0,
     count: 1,
     key: '1.3',
     price: 3000,
@@ -71,7 +74,7 @@ function Items(props){
     }>
       {/* Items */}
       {items.map((item,idx)=>(isAdmin ? 
-        <Item key={idx} idx={idx} mode={mode} item={item} onSave={(saveItem)=>{
+        <Item isAdmin={isAdmin} key={idx} idx={idx} mode={mode} item={item} onSave={(saveItem)=>{
           items[idx] = saveItem;
           setItems([...items]);
         }} onRemove={(removeItem)=>{

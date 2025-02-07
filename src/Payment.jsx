@@ -108,7 +108,7 @@ export default function Payment(){
       // },
       done: result => {
         console.log('Delivery:', result.itemDelivered);
-        navigate('/success', {state:{...item,count: item.count-1}});
+        navigate('/success', {state:{...item, count: item.count-1, sold: (item.sold || 0) + 1}});
       }
     }); 
   };
