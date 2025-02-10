@@ -12,7 +12,7 @@ export default function App() {
 
   return (<div className={`flex flex-col items-center pb-[40px] relative`}>
     {/* Admin/User */}
-    <a href={isAdmin ? "/" : "/?admin"} className={`absolute top-5 right-7 z-10 rounded-lg border-2 p-2 uppercase text-white bg-black`}>{isAdmin ? 'User':'Admin'}</a>
+    {/* <a href={isAdmin ? "/" : "/?admin"} className={`absolute top-5 right-7 z-10 rounded-lg border-2 p-2 uppercase text-white bg-black`}>{isAdmin ? 'User':'Admin'}</a> */}
 
     {/* Banner */}
     <img alt="banner" src={banner} className={`w-full`} />

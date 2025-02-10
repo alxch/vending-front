@@ -12,7 +12,7 @@
 } */
 
 * {
-  /* cursor: none !important; */
+  cursor: none !important;
   user-select: none !important;
 }
 body::-webkit-scrollbar{
