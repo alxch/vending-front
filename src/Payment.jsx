@@ -23,8 +23,8 @@ export default function Payment(){
   const [item, setItem] = useState(location.state);
   const [payment, setPayment] = useState({
     method: '',
-    cash:{amount:'',done:false},
-    payme:{link:'',done:false}
+    cash:{amount:'',done:false,error:null},
+    payme:{link:'',done:false,error:null}
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState('');
@@ -208,7 +208,10 @@ export default function Payment(){
       <span className="text-center text-[60px] text-gray-700">Выберите способ оплаты:</span>
       <div className={`flex flex-row justify-center gap-10 items-stretch w-full`}>
         {PaymentMethods.map(paymentMethod=>(
-          <div onClick={()=>selectPaymentMethod(paymentMethod)} key={paymentMethod} className={`${payment[paymentMethod].done && 'bg-green-700'} flex flex-col justify-between items-center gap-[15px] rounded-lg p-5 ${paymentMethod === payment.method ? 'border-4' : 'border-0' } text-[28px]`}>
+          <div onClick={()=>selectPaymentMethod(paymentMethod)} key={paymentMethod} className={`
+            ${payment[paymentMethod].error ? 'bg-red-700' : (payment[paymentMethod].done && 'bg-green-700')} 
+            flex flex-col justify-between items-center gap-[15px] rounded-lg p-5 ${paymentMethod === payment.method ? 'border-2' : 'border-0' } text-[28px]`}
+          >
             <img alt={paymentMethod} src={Logo[paymentMethod]}/>
             {paymentMethod === 'cash' ? 
               <span>{`${payment[paymentMethod].amount} UZS`}</span> : <>
