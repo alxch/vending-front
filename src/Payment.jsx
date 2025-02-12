@@ -57,14 +57,18 @@ export default function Payment(){
         url: 'payment-details', 
         method: 'get'
       },
-      repeat: result => {
-        const payment = result.payment;
-        console.log('Payment:',payment.method,payment.cash,payment.payme);
-        setPayment(payment);
-        return getPaymentDetails;
-      },
+      repeat: request.getPaymentDetailsRepeat,
       done: request.getPaymentDetailsDone
     });
+  };
+  request.getPaymentDetailsRepeat = result => {
+    if(
+      payment.cash.amount !== result.payment.cash.amount ||
+      payment.payme.link !== result.payment.payme.link
+    )
+      console.log('Payment:',result.payment.method,result.payment.cash,result.payment.payme);
+    setPayment(result.payment);
+    return getPaymentDetails;
   };
   // to get actual `back` value
   request.getPaymentDetailsDone = result => {
@@ -102,10 +106,6 @@ export default function Payment(){
         url: 'deliver-item', 
         method: 'post'
       },
-      // repeat: result => {
-      //   console.log('Delivery:', result.itemDelivered);
-      //   return deliverItem;
-      // },
       done: result => {
         console.log('Delivery:', result.itemDelivered);
         navigate('/success', {state:{...item, count: item.count-1, sold: (item.sold || 0) + 1}});
@@ -140,7 +140,7 @@ export default function Payment(){
 
     return request({
       onError: setError,
-      loading: status=>setLoading(status && 'Selecting payment method'),
+      loading: status=>setLoading(status && `${paymentMethod === '' ? 'Deselecting' : 'Selecting'} payment method`),
       params: {
         url: 'select-payment-method', 
         method: 'post',
@@ -209,14 +209,14 @@ export default function Payment(){
       <div className={`flex flex-row justify-center gap-10 items-stretch w-full`}>
         {PaymentMethods.map(paymentMethod=>(
           <div onClick={()=>selectPaymentMethod(paymentMethod)} key={paymentMethod} className={`
-            ${payment[paymentMethod].error ? 'bg-red-700' : (payment[paymentMethod].done && 'bg-green-700')} 
+            ${payment[paymentMethod].error ? 'bg-red-700' : (payment[paymentMethod].done ? 'bg-green-700' : '')} 
             flex flex-col justify-between items-center gap-[15px] rounded-lg p-5 ${paymentMethod === payment.method ? 'border-2' : 'border-0' } text-[28px]`}
           >
             <img alt={paymentMethod} src={Logo[paymentMethod]}/>
             {paymentMethod === 'cash' ? 
               <span>{`${payment[paymentMethod].amount} UZS`}</span> : <>
                 <QRCodeSVG level="Q" size="210" value={payment[paymentMethod].link} />
-                <a href={payment[paymentMethod].link}>{payment[paymentMethod].link}</a>
+                <a className='max-w-[200px] break-all' href={payment[paymentMethod].link}>{payment[paymentMethod].link}</a>
               </>
             }
           </div>
