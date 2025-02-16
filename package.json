@@ -17,9 +17,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "pack": "rm -r ../vending-back/front/ && cp -r build ../vending-back/front/",
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "pack": "mkdir -p ../release && cp -rf build/* ../release",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
