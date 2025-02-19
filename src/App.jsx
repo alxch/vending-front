@@ -3,7 +3,7 @@ import banner from './assets/images/banner-1.png'
 import Items from './Items';
 import Success from './Success';
 import Payment from './Payment';
-import Setup from './Setup';
+import Setup from './setup/Setup';
 import Menu from './Menu';
 // import { ThemeContext } from "./Theme";
 
@@ -16,7 +16,7 @@ export default function App() {
     {/* <a href={isAdmin ? "/" : "/?admin"} className={`absolute top-5 right-7 z-10 rounded-lg border-2 p-2 uppercase text-white bg-black`}>{isAdmin ? 'User':'Admin'}</a> */}
     
     {/* Content */}
-    {window.location.pathname == "/" ? 
+    {window.location.pathname === "/" ? 
       <HashRouter>
         {/* Banner */}
         <img alt="banner" src={banner} className={`w-full`} />

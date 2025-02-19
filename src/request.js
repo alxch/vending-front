@@ -3,6 +3,7 @@ const repeatInterval = 1000;
 
 // only one request allowed at a time
 const request = async({params, repeat, done, loading, onError}) => {
+  let result;
   try{
     const url = params.url;
     if(params.method.toLowerCase() === 'post'){
@@ -21,7 +22,7 @@ const request = async({params, repeat, done, loading, onError}) => {
       throw new Error(await response.text());
     }
     
-    const result = await response.json();
+    result = await response.json();
     // console.log(`${params.method.toUpperCase()} ${url}`, result, response.status);
     if(!result.status) throw new Error(JSON.stringify(result));
 
@@ -36,7 +37,7 @@ const request = async({params, repeat, done, loading, onError}) => {
       case 'done': 
         loading && loading(false);  
         done && done(result);
-        onError && onError(null);   
+        onError && onError(null);
       break;
       case 'error':
         throw new Error(result.error);
@@ -47,7 +48,7 @@ const request = async({params, repeat, done, loading, onError}) => {
   catch(error){
     loading && loading(false);
     console.error(error.message);
-    onError && onError(error.message);
+    onError && onError(error.message, result);
   }
 };
 
