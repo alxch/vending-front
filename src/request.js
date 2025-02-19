@@ -1,4 +1,4 @@
-const baseUrl = 'http://localhost:3001/api/';
+const baseUrl = `http://${process.env.NODE_ENV === 'development' ? 'localhost' : '10.42.0.1'}:3001/api/`;
 const repeatInterval = 1000;
 
 // only one request allowed at a time

@@ -213,8 +213,10 @@ export default function Payment(){
             flex flex-col justify-between items-center gap-[15px] rounded-lg p-5 ${paymentMethod === payment.method ? 'border-2' : 'border-0' } text-[28px]`}
           >
             <img alt={paymentMethod} src={Logo[paymentMethod]}/>
-            {paymentMethod === 'cash' ? 
-              <span>{`${payment[paymentMethod].amount} UZS`}</span> : <>
+            {paymentMethod === 'cash' ? <>
+                {payment[paymentMethod].error && <span>{payment[paymentMethod].error}</span>}
+                {payment[paymentMethod].amount && <span>{`${payment[paymentMethod].amount} UZS`}</span>} 
+              </> : <>
                 <QRCodeSVG level="Q" size="210" value={payment[paymentMethod].link} />
                 <a className='max-w-[200px] break-all' href={payment[paymentMethod].link}>{payment[paymentMethod].link}</a>
               </>
