@@ -39,23 +39,24 @@ export default function App() {
   }, []);
 
   return <div className={`flex flex-col items-center pb-[40px] relative`}>
-
-    {/* Admin */}
-    {adminPage && <a href={"/setup"} className={`absolute top-5 right-7 z-10 rounded-lg border-2 p-2 uppercase text-white bg-black opacity-80 hover:opacity-100`}>Back to Setup menu</a>}
-    
     {/* Content */}
     {window.location.pathname === "/" ? 
       <HashRouter>
-        {/* Banner */}
-        <img alt="banner" src={banner} className={`w-full`} />
+        {/* Header */}
+        {!adminPage ? 
+          <><img alt="banner" src={banner} className={`w-full`} />
+          <Menu/></> 
+          :
+          <a href={"/setup"} className={`my-[20px] rounded-lg border-2 p-2 uppercase text-white bg-black opacity-80 hover:opacity-100`}>Back to Setup menu</a> 
+        }
         {!adminPage || adminPage && isAdmin ? 
-          <><Menu/>
+          <>
           <Routes>
             <Route path="/" element={<Items isAdmin={isAdmin}/>}/>
             <Route path="/payment" element={<Payment/>}/>
             <Route path="/success" element={<Success/>}/>
           </Routes></> 
-        : 
+          : 
           <div className='mt-[20px]'>
             {error && <span className='text-[24px] text-red-700'>{error}</span>}
             {loading && <span className='text-[24px] text-green-700'>Loading...</span>}  
