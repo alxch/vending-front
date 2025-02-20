@@ -22,7 +22,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "pack": "mkdir -p ../release && cp -r build/* ../release",
+    "pack": "cp -r build/* ../release",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
