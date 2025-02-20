@@ -13,7 +13,7 @@ const StaticItems = [
   },
   {
     sold: 0,
-    count: 1,
+    count: 2,
     key: '1.2',
     price: 2000,
     name: 'Coca-Cola\n200ml',
@@ -21,7 +21,7 @@ const StaticItems = [
   },
   {
     sold: 0,
-    count: 1,
+    count: 3,
     key: '1.3',
     price: 3000,
     name: 'Coca-Cola\n300ml',
@@ -39,6 +39,10 @@ function Items(props){
   }
   const [items, setItems] = useState(itemsInit);
   const [mode, setMode] = useState(isAdmin ? "edit" : "view");
+
+  useEffect(()=>{
+    setMode(props.isAdmin ? "edit" : "view");
+  }, [props.isAdmin]);
 
   useEffect(()=>{
     console.log('Items:',items);
