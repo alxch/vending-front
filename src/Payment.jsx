@@ -214,8 +214,8 @@ export default function Payment(){
           >
             <img alt={paymentMethod} src={Logo[paymentMethod]}/>
             {paymentMethod === 'cash' ? <>
-                {payment[paymentMethod].error && <span>{payment[paymentMethod].error}</span>}
-                {payment[paymentMethod].amount && <span>{`${payment[paymentMethod].amount} UZS`}</span>} 
+                {payment[paymentMethod].error && <span className='text-red-300'>{payment[paymentMethod].error}</span>}
+                {payment[paymentMethod].amount !== '' && <span>{`${payment[paymentMethod].amount} UZS`}</span>} 
               </> : <>
                 <QRCodeSVG level="Q" size="210" value={payment[paymentMethod].link} />
                 <a className='max-w-[200px] break-all' href={payment[paymentMethod].link}>{payment[paymentMethod].link}</a>
