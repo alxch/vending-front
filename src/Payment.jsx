@@ -172,7 +172,7 @@ export default function Payment(){
       </div>
       {/* Error */}
       {error && (error.overlay ? 
-        <div className={`text-[30px] absolute w-[110%] h-full z-10 gap-3 opacity-80 flex flex-col justify-center items-center`}
+        <div className={`text-[30px] absolute w-[108%] h-[103%] z-10 gap-3 opacity-80 flex flex-col justify-center items-center`}
           style={{background: 'repeating-linear-gradient(45deg, #fdd, #fdd 10px, #fff 10px, #fff 20px)'}}
         >
           <span>{error.message}</span>{error.action}

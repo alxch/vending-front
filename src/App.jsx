@@ -45,11 +45,11 @@ export default function App() {
         {/* Header */}
         {!adminPage ? 
           <><img alt="banner" src={banner} className={`w-full`} />
-          <Menu/></> 
+          <Menu/></>
           :
           <a href={"/setup"} className={`my-[20px] rounded-lg border-2 p-2 uppercase text-white bg-black opacity-80 hover:opacity-100`}>Back to Setup menu</a> 
         }
-        {!adminPage || adminPage && isAdmin ? 
+        {!adminPage || (adminPage && isAdmin) ? 
           <>
           <Routes>
             <Route path="/" element={<Items isAdmin={isAdmin}/>}/>
@@ -59,7 +59,7 @@ export default function App() {
           : 
           <div className='mt-[20px]'>
             {error && <span className='text-[24px] text-red-700'>{error}</span>}
-            {loading && <span className='text-[24px] text-green-700'>Loading...</span>}  
+            {loading && <span className='text-[24px] text-green-700'>Loading...</span>}
           </div>
         }
       </HashRouter>

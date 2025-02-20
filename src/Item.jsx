@@ -12,20 +12,21 @@ const newItemData = {
 
 export default function Item(props){
   const [changed, setChanged] = useState(false);
-  const [item, setItem] = useState({...props.item || newItemData});
+  const [item, setItem] = useState(props.item || newItemData);
   const mode = props.mode || 'view';
   const idx = props.idx; // useId();
   const isAdmin = props.isAdmin;
   // const onChange = props.onChange || (()=>{});
 
   useEffect(()=>{
-    if(JSON.stringify(item) === JSON.stringify({...props.item || newItemData})){
+    if(JSON.stringify(item) === JSON.stringify(props.item || newItemData)){
       setChanged(false);
     }
     else {
+      if(!isAdmin) setItem(props.item);
       setChanged(true);
     }
-  }, [item, props.item]);
+  }, [item, props.item, isAdmin]);
 
   const setFile = (e) => {
     const files = e.target.files;
@@ -78,7 +79,7 @@ export default function Item(props){
     props.onRemove && props.onRemove({...item});  
   }
   const reset = () => {
-    setItem({...props.item || newItemData});
+    setItem(props.item || newItemData);
   }
   
   return <div className={`
@@ -96,15 +97,15 @@ export default function Item(props){
       }
       <button disabled={!changed} onClick={reset} className={`btn ${changed ? 'btn-blue' : ''} `}>Reset</button>  
     </div>}
-    {/* Count */}
-    <div className={`
-      rounded-full text-[20px] text-black p-[10px] flex flex-col items-center justify-start
-    `}>
-      <span>{mode === "view" ? item.count : 
+    {/* Count / Sold */}
+    <div className="flex flex-row justify-center items-center text-[20px] p-[10px]">
+      {mode === "view" ? 
+        item.count 
+        : 
         <input type="text" value={item.count} onChange={setCount} id={'count-'+idx}
-          className="bg-white text-black rounded max-w-[30px] text-center"/>
-      } pcs. {isAdmin && mode === "view" && `/ ${item.sold || 0} sold`} </span>
-      {/* Sold */}
+        className="bg-white text-black rounded text-center max-w-[40px] mr-1"/>
+      } 
+      <span>pcs. {isAdmin && `/ ${item.sold || 0} sold`} </span> 
     </div>
     {/* Image */}
     {mode === "view" ? <img alt='' src={item.src} /> : 

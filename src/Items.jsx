@@ -1,53 +1,72 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Item from './Item';
-
-const StaticItems = [
-  {
-    sold: 0,
-    count: 1,
-    key: '1.1',
-    price: 1000,
-    name: 'Coca-Cola\n100ml',
-    src: require('./assets/images/item-1.png')
-  },
-  {
-    sold: 0,
-    count: 2,
-    key: '1.2',
-    price: 2000,
-    name: 'Coca-Cola\n200ml',
-    src: require('./assets/images/item-2.png')
-  },
-  {
-    sold: 0,
-    count: 3,
-    key: '1.3',
-    price: 3000,
-    name: 'Coca-Cola\n300ml',
-    src: require('./assets/images/item-3.png')
-  },
-];
+import request from './request';
 
 function Items(props){
   const isAdmin = props.isAdmin;
-  const itemsInit = JSON.parse(localStorage.getItem('vm-items')||JSON.stringify(StaticItems));
-  const location = useLocation();
-  if(location.state){
-    const idx = itemsInit.findIndex(item => item.key === location.state.key);
-    if(idx !== -1) itemsInit[idx] = location.state;
-  }
-  const [items, setItems] = useState(itemsInit);
+  const [items, setItems] = useState(null);
   const [mode, setMode] = useState(isAdmin ? "edit" : "view");
+  const [/* loading */, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [timer, setTimer] = useState(null);
+
+  const getItems = () => {
+    request({
+      onError: setError,
+      loading: setLoading,
+      params: {
+        url: 'items',
+        method: 'get'
+      },
+      done: request.getItemsDone
+    });
+  };
+  request.getItemsDone = result => {
+    if(JSON.stringify(items) !== JSON.stringify(result.items)){
+      console.log('Items get:', result.items);
+      setItems(result.items);
+    } else {
+      console.log('Items get');
+    }
+    if(!isAdmin){
+      setTimer(setTimeout(getItems, 2000));
+    }
+  };
+
+  request.clearTimer = () => {
+    if(timer) clearTimeout(timer);
+  };
+
+  useEffect(()=>{
+    getItems();
+    return () => {
+      request.clearTimer();
+    };
+    // eslint-disable-next-line
+  }, []);
+
+  const postItems = () => {
+    if(!isAdmin) return;
+
+    request({
+      onError: setError,
+      loading: setLoading,
+      params: {
+        url: 'items',
+        method: 'post',
+        body: JSON.stringify(items),
+      },
+      done: result=>{
+        console.log('Items post:', result.items);
+        setItems(result.items);
+      }
+    });
+  };
 
   useEffect(()=>{
     setMode(props.isAdmin ? "edit" : "view");
   }, [props.isAdmin]);
-
-  useEffect(()=>{
-    console.log('Items:',items);
-    localStorage.setItem('vm-items', JSON.stringify(items));
-  }, [items]);
 
   const changeMode = (e) => {
     setMode(e.target.value);
@@ -56,9 +75,7 @@ function Items(props){
   return (<>
     {/* Controls */}
     {isAdmin && 
-      <div className={` 
-        flex flex-col gap-2 text-[26px] mb-[50px] p-[15px] border border-dashed rounded
-      `}>
+      <div className={`flex flex-col gap-2 text-[26px] mb-[20px] p-[10px]`}>
         Display mode: 
         <label>
           <input type='radio' value="edit" name="mode" checked={mode==="edit"} onChange={changeMode} className='scale-[1.5] -translate-y-[2px] mr-2 no-keyboard'/>
@@ -70,6 +87,11 @@ function Items(props){
         </label>
       </div>
     }
+    {/* Status */}
+    <div className='mb-[20px]'>
+      {error && <span className='text-[24px] text-red-700'>{error}</span>}
+      {/* {loading && <span className='text-[24px] text-green-700'>Loading...</span>} */}
+    </div>
     {/* Wrap */}
     <div className='rounded flex flex-wrap gap-[50px] justify-evenly items-stretch p-[20px]' style={
       isAdmin && mode === 'view' ? {
@@ -77,14 +99,14 @@ function Items(props){
       } : {}
     }>
       {/* Items */}
-      {items.map((item,idx)=>(isAdmin ? 
+      {items && items.map((item,idx)=>(isAdmin ? 
         <Item isAdmin={isAdmin} key={idx} idx={idx} mode={mode} item={item} onSave={(saveItem)=>{
           items[idx] = saveItem;
-          setItems([...items]);
+          postItems();
         }} onRemove={(removeItem)=>{
           if(!window.confirm("Do You really want to delete item " + removeItem.key + "?")) return;
           items.splice(idx,1);
-          setItems([...items]);
+          postItems();
         }} /> : 
         /* not admin */
         <Link key={idx} className={`${item.count ? '':'grayscale'} flex flex-col items-center justify-end`} to={item.count ? '/payment' : ''} state={item}>
@@ -96,7 +118,7 @@ function Items(props){
       {isAdmin && mode === "edit" && 
         <Item idx="_" mode={mode} onAdd={(newItem)=>{
           items.push(newItem);
-          setItems([...items]);
+          postItems();
         }} />
       }
     </div>
