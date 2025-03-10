@@ -8,6 +8,7 @@ import Menu from './Menu';
 import { useEffect, useState } from 'react';
 import request from './request';
 // import { ThemeContext } from "./Theme";
+import pjson from '../package.json';
 
 export default function App() {
   // const { theme, toggleTheme } = useContext(ThemeContext);
@@ -40,6 +41,7 @@ export default function App() {
 
   return <div className={`flex flex-col items-center pb-[40px] relative`}>
     {/* Content */}
+    <div className='absolute left-2 top-1 z-10'>v.{pjson.version}</div>
     {window.location.pathname === "/" ? 
       <HashRouter>
         {/* Header */}
