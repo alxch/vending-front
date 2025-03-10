@@ -20,8 +20,8 @@ html, body, #root {
 }
 
 * {
-  /* cursor: none !important; */
-  /* user-select: none !important; */
+  cursor: none !important;
+  user-select: none !important;
 }
 
 body::-webkit-scrollbar{
