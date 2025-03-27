@@ -1,11 +1,21 @@
-import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Item from './Item';
 import request from './request';
 
+// const Rows = 6;
+const Cols = 10;
+const Cells = [
+  2,0,2,0,2,0,2,0,2,0,
+  2,0,2,0,2,0,2,0,2,0,
+  1,1,1,1,1,1,1,1,1,1,
+  1,1,1,1,1,1,1,1,1,1,
+  1,1,1,1,1,1,1,1,1,1,
+  1,1,1,1,1,1,1,1,1,1
+];
+
 function Items(props){
   const isAdmin = props.isAdmin;
-  const [items, setItems] = useState(null);
+  const [items, setItems] = useState([]);
   const [mode, setMode] = useState(isAdmin ? "edit" : "view");
   const [/* loading */, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -30,7 +40,7 @@ function Items(props){
       console.log('Items get');
     }
     if(!isAdmin){
-      setTimer(setTimeout(getItems, 2000));
+      setTimer(setTimeout(getItems, 3000));
     }
   };
 
@@ -72,6 +82,17 @@ function Items(props){
     setMode(e.target.value);
   }
 
+  const getCell = cellIdx => {
+    const col = cellIdx % Cols;
+    const row = (cellIdx - col) / Cols;
+    return {col:col+1,row:row+1,size:Cells[cellIdx]};
+  };
+
+  const getItemIdx = cellIdx => {
+    const {row,col} = getCell(cellIdx);
+    return items.findIndex(item => item.key === `${row}.${col}`);
+  };
+
   return (<>
     {/* Controls */}
     {isAdmin && 
@@ -93,34 +114,50 @@ function Items(props){
       {/* {loading && <span className='text-[24px] text-green-700'>Loading...</span>} */}
     </div>
     {/* Wrap */}
-    <div className='rounded flex flex-wrap gap-[50px] justify-evenly items-stretch p-[20px]' style={
+    <div className={`grid grid-cols-10 gap-[25px] p-5`} style={
       isAdmin && mode === 'view' ? {
         background: 'repeating-linear-gradient(45deg, #ddd, #ddd 10px, #fff 10px, #fff 20px'
       } : {}
     }>
-      {/* Items */}
-      {items && items.map((item,idx)=>(isAdmin ? 
-        <Item isAdmin={isAdmin} key={idx} idx={idx} mode={mode} item={item} onSave={(saveItem)=>{
-          items[idx] = saveItem;
-          postItems();
-        }} onRemove={(removeItem)=>{
-          if(!window.confirm("Do You really want to delete item " + removeItem.key + "?")) return;
-          items.splice(idx,1);
-          postItems();
-        }} /> : 
-        /* not admin */
-        <Link key={idx} className={`${item.count ? '':'grayscale'} flex flex-col items-center justify-end`} to={item.count ? '/payment' : ''} state={item}>
-          <Item idx={idx} item={item} />
-        </Link>
+      {/* Cells */}
+      {Cells.map((cell,cellIdx) => cell !== 0 && (
+        <Item key={cellIdx} cell={getCell(cellIdx)}
+          mode={mode} idx={cellIdx} isAdmin={isAdmin}
+          item={getItemIdx(cellIdx) !== -1 ? items[getItemIdx(cellIdx)] : null}
+          onSave={(saveItem)=>{
+            if(getItemIdx(cellIdx) === -1) return;
+            const [row,col] = saveItem.key.split('.').map(Number);
+            if(!Cells[(row-1)*Cols+(col-1)]) {
+              console.error('Item key not allowed:', saveItem.key);
+              return;
+            }
+
+            items[getItemIdx(cellIdx)] = saveItem;
+            // setItems([...items]);
+            postItems();
+          }}
+          onRemove={(removeItem)=>{
+            if(getItemIdx(cellIdx) === -1) return;
+            if(!window.confirm("Do You really want to delete item " + removeItem.key + "?")) return;
+            
+            items.splice(getItemIdx(cellIdx),1);
+            // setItems([...items]);
+            postItems();
+          }}
+          onAdd={(newItem)=>{
+            const [row,col] = newItem.key.split('.').map(Number);
+            if(!Cells[(row-1)*Cols+(col-1)]) {
+              console.error('Item key not allowed:', newItem.key);
+              return;
+            }
+
+            items.push(newItem);
+            // setItems([...items]);
+            postItems();
+          }}
+        />
       ))}
 
-      {/* New item */}
-      {isAdmin && mode === "edit" && 
-        <Item idx="_" mode={mode} onAdd={(newItem)=>{
-          items.push(newItem);
-          postItems();
-        }} />
-      }
     </div>
   </>);
 }

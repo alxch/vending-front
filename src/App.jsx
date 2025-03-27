@@ -46,7 +46,7 @@ export default function App() {
       <HashRouter>
         {/* Header */}
         {!adminPage ? 
-          <><img alt="banner" src={banner} className={`w-full`} />
+          <><img alt="banner" src={banner} className={`w-full`} onDoubleClick={()=>window.location.reload()} />
           <Menu/></>
           :
           <a href={"/setup"} className={`my-[20px] rounded-lg border-2 p-2 uppercase text-white bg-black opacity-80 hover:opacity-100`}>Back to Setup menu</a> 
