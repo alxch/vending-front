@@ -39,7 +39,10 @@ export default function App() {
     // eslint-disable-next-line
   }, []);
 
-  return <div className={`flex flex-col items-center pb-[40px] relative`}>
+  return <div className={`flex flex-col items-center pb-[40px] relative`} onDragStart={e => {
+    e.preventDefault();
+    e.stopPropagation();
+  }}>
     {/* Content */}
     <div className='absolute left-2 top-1 z-10'>v.{pjson.version}</div>
     {window.location.pathname === "/" ? 
